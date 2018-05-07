@@ -27,3 +27,16 @@ vim .git/config可以看到:
 [branch "master"]
 	remote = origin
 	merge = refs/heads/master
+	
+【2018.5.7】
+1.与git config有关的文件
+git config --system:影响的是/etc/gitconfig文件,系统中对所有用户都有效的配置
+git config --global:影响的是~/.gitconfig文件,对当前用户下所有仓库都有效
+git config         :影响的是./git/config文件,仅仅对当前仓库有效
+所以在配置文本编辑器的时候可以用:
+git config --global core.editor vim
+
+2.git fetch
+(1)远程分支反映了远程仓库的状态(并不是最新的状态,而是上一次和它通信的状态,远程仓库最新的状态可能已经更改)
+(2)git fetch下载本地仓库与远程仓库中的差异提交,并更新远程分支
+(3)git fetch仅仅是更新远程分支,并不会影响本地分支
