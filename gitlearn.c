@@ -80,4 +80,28 @@ git merge  o/master
 (2)git pull:先更新远程分支,再将其合入本地分支
 git pull == git fetch + git merge <just-fetch-branch>
 即:先更新远程分支,再将其merge到本地分支上去
-(3)git pull的参数
+
+【2018.5.14】
+1.git pull的参数
+我们知道:git fetch有三种形式:git fetch;git fetch origin foo;git fetch origin foo~:bar
+git pull origin foo <==> git fetch origin foo + git merge o/foo
+git pull origin bar~1:bugFix <==> git fetch origin bar~1:bugFix + git merge bugFix
+
+2.git push
+(1)git push负责将你的变更上传到指定的远程仓库,并在远程仓库上合并你的新提交记录
+git push实际上会更新远程仓库的分支,然后也会更新存在于本地的远程分支
+(2)远程跟踪
+【思考】:为什么在git push的时候默认会把master分支上的提交更新到远程仓库的master分支并更新本地的远程分支呢?
+@这种关系由分支的"remote tracking"属性决定的
+@该属性是由git clone时默认产生的,git clone时本地两个分支:本地的master与远程分支o/master
+@该属性的手动设置方法两种:
+<1>git checkout -b totallyNotMaster o/master
+创建并切换到totallyNotMaster分支上,并让它跟踪o/master
+这样就可以把totallyNotMaster分支上的更新推送到远程仓库的master分支并更新本地远程分支o/master了
+这种方法适用于本地新建分支的情况
+<2>git branch -u o/master foo
+foo分支跟踪o/master了
+这样就可以把foo分支上的更新推送到远程仓库的master分支并更新本地远程分支o/master了
+这种方法适用于本地存在foo分支的情况
+但是git branch -u o/master foo并不会将当前分支切换到foo分支,需要checkout命令手动切换
+若当前分支就在foo分支上,则命令可简化为git branch -u o/master
