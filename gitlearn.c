@@ -105,3 +105,34 @@ foo分支跟踪o/master了
 这种方法适用于本地存在foo分支的情况
 但是git branch -u o/master foo并不会将当前分支切换到foo分支,需要checkout命令手动切换
 若当前分支就在foo分支上,则命令可简化为git branch -u o/master
+【注意】:虽然git branch -u o/master foo指定了foo分支去跟踪o/master,但是若没有checkout到foo分支上,git push仍会将默认masterpush到远程库
+checkout到foo分支上后再git push则只pushfoo分支上的更新了
+【理解】:git是根据当前检出分支的属性来决定push的仓库及目的地的
+最初git clone时将master设置为跟踪o/master
+可以手动根据git branch -u o/master foo将foo分支设置为跟踪o/master
+但是此时并没有更改本地master分支的跟踪属性
+所以*master时git push会push master上的更新到远程仓库
+所以*foo时git push会push foo上的更新到远程仓库
+
+
+【2018.5.15】
+1.git push的参数
+(1)
+git push <remote> <place>
+【注意】:如上带参数的git push会忽略remote tracking的影响
+place参数告诉了git提交记录来自于本地仓库分支<place>,push目的地为远程仓库分支<place>
+place参数同时指明了提交的来源与去向
+【例子】:
+git push origin master
+将本地仓库master分支上的更新push到远程仓库origin上的master分支,并更新本地的远程分支o/master
+此时就算是HEAD为test分支,且test分支的remote tracking属性为o/master也不会push test上的更新
+但是整个过程中HEAD的位置仍是test分支
+(2)
+git push origin <source>:<destination>
+【注意】:如上带参数的git push会忽略remote tracking的影响
+source参数告诉git提交的来源:本地仓库某分支
+destination参数告诉git提交的目的地:远程仓库某分支
+【例子】:
+git push origin foo^:master
+git push origin master:newbranch
+若此时远程仓库中没有newbranch,则会在远程仓库中新建newbranch分支,更新newbranch分支,同时在本地仓库中新建o/newbranch分支并更新
