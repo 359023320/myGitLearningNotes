@@ -136,3 +136,31 @@ destination参数告诉git提交的目的地:远程仓库某分支
 git push origin foo^:master
 git push origin master:newbranch
 若此时远程仓库中没有newbranch,则会在远程仓库中新建newbranch分支,更新newbranch分支,同时在本地仓库中新建o/newbranch分支并更新
+
+【2018.5.19】
+1.偏移的提交历史
+什么是偏移的提交历史
+本地仓库:C0->C1(o/master)->C3(*master)
+远程仓库:C0->C1->C2(master)
+在本地仓库更新的时候可能只有C1(远程仓库只有C1存在),这时候本地仓库在C1的基础上进行开发出C3
+在这期间远程仓库中可能有别人的提交,C2
+这时如果git push的话由于本地仓库与远程仓库的基础不一致,会导致push不成功
+解决思路是先更新本地仓库,再进行push
+先git fetch更新本地仓库中的远程分支o/master
+再git rebase o/master
+这时就变为:C0->C1->C2(o/master)->C3(*master)
+最后进行git push即可完成
+【注意】:
+上述操作:git fetch; git rebase o/master可用一条命令取代
+<==>git pull --rebase(git fetch; git rebase <just-fetch-branch>)
+
+2.git fetch与git push中<source>参数的诡异用法
+如何删除远程仓库中的分支与本地仓库中的远程分支?
+在本地仓库中新建分支的方法
+没有source的source:
+【例子】
+git fetch origin :bugFix
+只在本地仓库中创建一个新分支bugFix(HEAD并没有指向bugFix)
+相当于git branch bugFix
+git push  origin :side
+删除远程仓库origin中的side分支,同时删除本地仓库中的远程分支o/side
