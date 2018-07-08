@@ -65,3 +65,12 @@ git stash drop [<stash>]
 【小结】
 git stash list <==> git stash drop [<stash>]
 git stash save -a "message" <==> git stash pop [--index] [<stash>]/git stash apply [--index] [<stash>]
+
+【补充】
+git stash save --keep-index "message"
+存储所有工作区与暂存区的文件,在 stash list中增加一条记录
+但是与git stash save -a "message"不同的是：
+-k选项只会让工作区的文件还原与HEAD一致,保留暂存区文件状态
+但是书上说的没有保留暂存区文件时错误的,实际上是stash了的,可以在其他分支上去应用
+
+git stash clear
