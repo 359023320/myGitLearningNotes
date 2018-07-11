@@ -16,6 +16,19 @@ tracked(staged, modified, unmodified)
 5.git版本号
 哈希值,一般取前7位
 
+【2018.4.17】
+1.在所有仓建git分支
+repo start 分支名 --all(若没有分支名,则新建,若存在分支名,则所有仓切换到该分支)
+【参见git仓库,repo命令,分支之间的关系】
+2.强制更新所有仓,丢弃本地修改
+repo forall -c "git clean -dfx; git reset --hard origin/master"
+在所有仓下执行""里面的内容
+git clean -dfx:删除未被跟踪的文件(包括忽略的)(例如自己添加的cfg.mak文件,但是modified文件不会被清除)
+为什么cfg.mak属于untracked文件但是git status看不到呢？
+因为它被加在了隐藏文件.gitignore里面被忽略掉了
+git reset --hard origin/master:将本地仓库代码还原为与远程仓库一致
+(origin/master叫远程分支,该分支在本地仓库,反映了本地仓库上一次与远程仓库的通信状态)
+
 【2018.7.6】
 1.git stash save/pop/list/drop
 【功能】
