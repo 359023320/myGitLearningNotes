@@ -49,6 +49,45 @@ git log --name-only:在git log的基础上显示修改哪些文件
 git lg:以图示的方式显示提交顺序
 (自己一般的组合是:git log --pretty=oneline -n)
 
+【2018.4.19】
+1.查看分支状态(repo branches与git branch -vv)
+两者都可以看到本地所有的分支, 区别在于:
+repo branches:查看所有分支, 但注重查看分支在哪些仓下有
+git branch -vv:查看当前仓库所有分支, 但是注重查看分支最新的commitId与对应的远程分支
+【补充】:
+<1>.git branch:查看当前仓库的所有本地分支
+比如我在Code仓下创建一个mytest分支, 在Code仓下git branch就可以看到mytest分支
+但是在CI仓下git branch就看不到mytest分支
+说明git branch只能看到本仓库下的本地分支
+<2>.git branch -r:查看当前仓库的所有远程分支
+r=remote
+<3>.git branch -a:查看当前仓库的所有本地分支与远程分支
+a=all
+
+2.创建分支
+【注意】:建议不要在某一个单独的仓库下面创建分支(例如用git checkout -b branchname或者git branch branchname指令)
+repo start BRANCHNAME --all:在所有仓下创建名为BRANCHNAME的分支, 若BRANCHNAME分支存在, 则所有仓的内容切换到BRANCHNAME分支上
+只有用该方式创建的分支才能用repo upload提交, 因为它除了创建分支以外, 还会和远程分支关联
+
+3.将其它提交应用到当前分支
+git cherry-pick commitId
+【补充】:详细请见git cherry-pick深入理解
+
+4.本地分支应用场景
+代码备份与提交协助:开发的时候在开发分支上提交保存, 再到提交分支上上传提交
+见<涛哥git大讲堂>1
+
+5.追加提交(git commit --amend)
+假如我提交了一版v1(如修改crypto.c文件), 这时我又想提交, 但是不想新增commit(或者已经repo upload但是没有merge)
+这时我修改了文件(如修改inject.c文件), 正常git add然后git commit --amend
+这时会在刚才修改crypto.c那个提交上面去修改信息(注意:这时的commitId一定不同)
+crypto.c是属于已经提交的, inject.c是新追加的提交
+但是修改后的提交显示crypto.c与inject.c都是要commit的文件
+最后重新repo upload上库即可
+【原理】:
+git commit --amend只会提交暂存区里面的东西, 若刚刚commit没有修改任何文件的情况下又git commit --amend的话仅会修改提交信息
+最终只有一个提交, amend后的提交会代替之前的提交结果
+
 【2018.7.6】
 1.git stash save/pop/list/drop
 【功能】
