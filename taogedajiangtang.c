@@ -88,6 +88,33 @@ crypto.c是属于已经提交的, inject.c是新追加的提交
 git commit --amend只会提交暂存区里面的东西, 若刚刚commit没有修改任何文件的情况下又git commit --amend的话仅会修改提交信息
 最终只有一个提交, amend后的提交会代替之前的提交结果
 
+【2018.4.24】
+1.git打patch:git format-patch -n
+将本地某几次提交发送给其他人
+n可以随意指定, 如-1, -2等等
+【注意】:如果n!=1则会产生多个patch, 一个提交产生一个patch, 需要把这些patch都发送给使用方
+所以最好把需要的改动弄到一个提交上去
+patch的使用:git apply xxx.patch
+【注意】:此命令只会更改工作区代码, 不会产生新的提交
+
+2.撤销没有上库的提交
+(1).首先在gerrit上撤销:abandon
+(2).代码上执行git reset --soft HEAD^
+
+3.撤销commit:用新的commit来冲掉需要撤销的commit
+【注意】:commit不能删除, 只能用新的commit来还原以前文件的状态
+git revert 要撤销的版本号
+同时可以在gerrit上点击revert来完成撤销工作
+【例子】:例如我修改了inject.c提交了一版commit0
+git revert commit0:产生新的commit1, inject.c又回到了0之前的状态
+
+【2018.4.26】
+1.git reset HEAD^, git reset --soft HEAD^, git reset --hard HEAD^的区别
+(1).git reset HEAD^ == git reset --mixed HEAD^:commit回到HEAD^, HEAD与HEAD^之间的差异文件变为modified状态(红色)
+(2).git reset --soft HEAD^:commit回到HEAD^, HEAD与HEAD^之间的差异文件为staged状态(绿色)
+(3).git reset --hard HEAD^:commit回到HEAD^, 工作区所有文件都回到HEAD^状态, 在HEAD上modified的文件没有了
+也可以用git reset --hard HEAD来去除本地的修改, 将本地环境还原为干净的commit
+
 【2018.7.6】
 1.git stash save/pop/list/drop
 【功能】
