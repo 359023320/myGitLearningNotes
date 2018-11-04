@@ -164,3 +164,26 @@ git fetch origin :bugFix
 相当于git branch bugFix
 git push  origin :side
 删除远程仓库origin中的side分支,同时删除本地仓库中的远程分支o/side
+
+【2018.11.4】
+1.git push/pull/fetch及远程分支, 远程跟踪分支小总结
+git clone会做的三件事:clone所有提交, 建立origin/master分支, 建立本地master分支且跟踪属性为origin/master
+远程跟踪分支(remote-tracking branch)又叫远程分支(remote branch)是位于本地的分支, 记录与远程仓库分支通信情况的
+跟踪分支是本地分支, 可以自己建立与设定, 跟踪的是本地仓库的远程分支, 为git pull与git push设定默认的合并/推送目的地
+跟踪分支的建立方法有两种:
+1).新建本地分支并设立跟踪分支
+git checkout -b foo origin/master
+2).指定已有的本地分支的跟踪属性
+git branch -u origin/master foo
+(如果当前分支在foo上的话foo可省略)
+
+git fetch:去所有关联的远程仓库更新所有的分支到本地仓库, 更新本地仓库的远程跟踪分支, 若本地仓库没有对应的远程分支, 则新建(跟踪分支需自己建立)
+git fetch origin:去origin仓库更新所有的分支到本地仓库, 更新本地仓库的远程跟踪分支, 若本地仓库没有对应的远程分支, 则新建(跟踪分支需自己建立)
+git fetch origin foo <==> git fetch origin foo:o/foo(若本地o/foo不存在则新建)
+git fetch origin :bar :在本地仓库新建bar分支
+git fetch [option] [remote] (+)src:des
+
+git push:根据当前检出分支的跟踪属性(remote-tracking attr)将提交推送合并至远程仓库并更新本地的远程分支
+git push origin foo <==> git push origin foo:foo(若远程仓库没有foo分支, 则新建, 并且在本地新建远程分支origin/foo)
+git push origin :bar 删除远程仓库的bar分支与本地仓库的origin/bar分支
+git push [option] [origin] (+)src:dest
