@@ -115,6 +115,37 @@ git revert commit0:产生新的commit1, inject.c又回到了0之前的状态
 (3).git reset --hard HEAD^:commit回到HEAD^, 工作区所有文件都回到HEAD^状态, 在HEAD上modified的文件没有了
 也可以用git reset --hard HEAD来去除本地的修改, 将本地环境还原为干净的commit
 
+【2018.4.27】
+1.git reset与git checkout的区别
+(1).HEAD, 分支与commit之间的关系
+正常情况下:HEAD->分支->commit(可参考.git文件夹中的HEAD文件)
+如:cat HEAD
+ref:refs/heads/test_20180427
+非正常情况下(如执行了git chckout commitId命令后):HEAD->临时分支->commit
+(2)【例子git checkout】
+分别有三个提交:commit1, commit2, commit3(假设1,2,3是提交的hash值)
+假设现在的分支是test_20180427
+那么现在的关系是:HEAD->test_20180427->commit3
+当执行git checkout 1时, HEAD指针指向临时分支1, 临时分支1指向commit1, 这时代码变成commit1的代码
+那么现在的关系是:HEAD->temp1->commit1, test_20180427->commit3
+【注意】:临时分支1只是临时创建的, 不能用于提交代码(repo upload)
+(3)【例子git reset】
+分别有三个提交:commit1, commit2, commit3(假设1,2,3都是提交的hash值)
+假设现在的分支是test_20180427
+那么现在的关系是:HEAD->test_20180427->commit3
+当执行git reset HEAD^^后现在的关系变为:HEAD->test_20180427->commit1
+所以git reset是HEAD连同分支一起移动, 便于提交代码(repo upload), 而分离的HEAD虽然得到了想要的代码, 却不便于repo upload提交代码
+
+2.如何删除git分支
+删除某个仓下面的分支:git branch -D branchname
+删除所有仓下面的分支:repo forall -c "git branch -D branchname"
+【注意】:不能在当前分支上删除当前分支！
+
+3.如何利用git找东西
+git grep "xxx"
+repo forall -c "git grep "xxx""
+
+
 【2018.7.6】
 1.git stash save/pop/list/drop
 【功能】
