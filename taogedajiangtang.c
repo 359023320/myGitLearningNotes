@@ -145,6 +145,51 @@ ref:refs/heads/test_20180427
 git grep "xxx"
 repo forall -c "git grep "xxx""
 
+【2018.5.3】
+1.gerrit搜索功能使用
+【注意】:可以随意组合, 多个条件用空格隔开
+指定状态:status:open
+指定作者:owner:chentao
+指定仓库:project:LIS/LIS_STB_GIT/LiSTBLinux/Code
+【注意】:该仓库路径是远程仓库路径而不是本地仓库路径, 以.repo/manifests/default.xml中的为准
+指定分支:branch:master
+指定时间:after:2017-1-1 before:2017-3-1
+指定版本:commit:HASH值
+搜索log:message:inject
+指定文件:file:文件路径
+
+【2018.5.4】
+1.关于git revert冲突的问题(也可以见2018.11.13的分析笔记)
+有四个提交:1->2->3->4(HEAD)
+执行git revert 3的时候:
+提交顺序:1->2->3->4->(!3)(HEAD)
+代码顺序:1->2->4(就是将3之于2的修改去掉同时保留4的修改)
+【注意】:有时候1, 2, 3, 4离得太近会有冲突, 1, 2, 3, 4离得较远就不会冲突
+
+2.git冲突解决工具:git mergetool
+(1)merge时冲突是怎么产生的
+conflict:两个已经提交的分支的相同文件相同位置的不同操作进行了合并
+【conflict例子】:
+base为1, 分支为master, 修改line1, 提交为commit2(1->2(master))
+base为1, 分支为dev, 修改为line2, 提交为commit3(1->3(dev))
+line1与line2为同一个文件的同一处, 这时不管git merge master还是git merge dev, 都会显示conflict
+【非conflict例子】:
+非conflict的例子较多, 不一一列举
+(2)git mergetool工具的使用
+目前看来只是用在git merge产生的conflict能用, 方法如同普通的冲突处理方法
+(3)git diff, git diff HEAD, git diff --cached复习
+git diff:比较工作区与暂存区的差异
+git diff HEAD:比较工作区与HEAD的差异
+git diff --cached:比较暂存区与HEAD的差异
+
+3.git rebase后commitID变化问题
+有两个分支, master与dev:
+1->3->4(master)
+1->2(*dev)
+git rebase master后:
+1->3->4->2'(*dev)
+此时这个2'与2的commitID不同, 但是提交的时间却是一样的
+
 
 【2018.7.6】
 1.git stash save/pop/list/drop
