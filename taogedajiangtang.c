@@ -190,6 +190,40 @@ git rebase master后:
 1->3->4->2'(*dev)
 此时这个2'与2的commitID不同, 但是提交的时间却是一样的
 
+【2018.5.23】
+1.初次运行git前的配置
+git自带git config工具去配置git的外观与行为, 一共有三个文件去控制
+(1)/etc/gitconfig文件:影响所有用户下面的所有git仓库
+git config --system命令会涉及该文件
+
+(2)~/.gitconfig文件:只影响当前用户下所有的git仓库
+git config --global命令会涉及该文件
+
+(3)某个git仓库下的.git/config文件:仅影响该git仓库
+git config命令会涉及该文件
+
+2.配置用户信息, 编辑器, 检查git配置
+(1)git config --global user.name "Andy Blackwood"
+   git config --gloabl user.email xxxx@gmail.com
+   git config --global core.editor vim
+   git config --list
+   列出git能找到的所有配置(可能会显示出重复的变量名, 因为git会从不同的config文件里读取配置信息, 但是git应用的配置是重复变量名的最后一个)
+  
+(2)git config <key>:用来检查某一项的配置
+如:git config user.name
+如:git config --global core.editor
+
+3.git 获取帮助git <verb> --help
+如:git config --help
+
+【2018.5.24】
+1.HEAD->branch->commit怎么看
+cd .git
+cat HEAD
+如:我按照上述步骤操作下来得到:ref:refs/heads/MYMASTER_CODEX
+cd .git/refs/heads
+cat MYMASTER_CODEX
+如:我按照上述步骤操作下来得到:113b4522056eb36e52fee90198d72b1abe13e238
 
 【2018.7.6】
 1.git stash save/pop/list/drop
