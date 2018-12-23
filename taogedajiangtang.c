@@ -225,6 +225,115 @@ cd .git/refs/heads
 cat MYMASTER_CODEX
 如:我按照上述步骤操作下来得到:113b4522056eb36e52fee90198d72b1abe13e238
 
+【2018.5.25】
+1.获取新建git仓库的两种方法:git init与git clone
+(1)git init
+项目文件夹为myprogram, 里面有很多文件
+cd myprogram
+git init
+git add *.c
+git commit -s
+(2)git clone
+从远程仓库克隆git仓库到本地
+格式为:git clone [url] <ownreponame>
+【例子】
+git clone https://github.com/libgit2/libgit2
+会在当前路径下创建libgit2的文件夹, 里面就是远程库所有的内容了, 本地仓库的名字也是libgit2
+git clone https://github.com/libgit2/libgit2 mygit
+在当前路径下创建mygit文件夹, 里面就是远程库所有的内容了, 本地仓库的名字是mygit
+
+2.gitignore的简单写法
+.gitignore是什么
+在一个git仓库中, commit后的文件被git仓库管理起来, 但是没有git add->git commit的文件就是untracked文件
+在git status的时候就会列出这些未被跟踪的文件, 显示它们的状态为untracked
+可以把这些文件加入.gitignore文件中, git status就不显示它们的状态了
+【注意】:.gitignore文件只对untracked文件有效, 在.gitignore文件中#与空行都属于无效的
+【例子】
+tmp文件夹下git init一个git仓库
+有文件:1.c 2.c 3.c 1.o 2.o 3.o
+有文件夹:dir1/1-1.txt
+dir1/1-2.txt
+dir1/1-3.txt
+dir2/2-1.txt
+dir2/2-2.txt
+dir2/2-3.txt
+dir3/3-1.txt
+dir3/3-2.txt
+dir3/3-3.txt
+其中*.c已经被git管理起来了, 我们要忽略所有的.o文件, 忽略dir1, dir2下面的文件, 忽略dir3下面的文件除了dir3/3-3.txt
+touch .gitignore
+vim .gitignore
+-------------------------
+#ignore *.o
+*.o
+#ignore dir1 dir2
+/dir1
+/dir2
+#ignore dir3 but dir3/3-3.txt
+/dir3/ *.txt
+!/dir3/3-3.txt
+#ignore .gitignore itself
+.gitignore
+-------------------------
+保存退出后git status连.gitignore的untracked状态也看不到了
+【注意】:bin/与/bin的区别
+/bin:仅忽略当前路径下bin目录
+bin/:忽略所有名字为bin的目录
+
+【2018.5.28】
+1.git commit, git commit -s, git commit -m的区别
+(1)git commit -s
+-------------------------------------------------------------------
+[Module] Abstract 纯英文
+
+[问题描述]详细描述修改的问题以及修改思路
+[问题单号]Service单号/JIRA单号/无
+
+Signed-off-by:andyliao<xxxxx@yyy.com>
+#Please enter the commit message for your changes, lines starting
+#with '#' will be ignored, and an empty message aborts the commit.
+#On branch master
+#Changes to be committed:
+#modified:1.c
+-------------------------------------------------------------------
+Line1~5是要自己填写的基本信息
+Line6是sign off信息, 提交人的工号, 邮箱
+Line8~12是注释信息, 提示哪些文件会被提交
+
+【注意】
+git commit时会将注释信息丢弃, 只用填写的基本信息和sign off信息生成commit信息
+
+(2)git commit
+-------------------------------------------------------------------
+[Module] Abstract 纯英文
+
+[问题描述]详细描述修改的问题以及修改思路
+[问题单号]Service单号/JIRA单号/无
+
+#Please enter the commit message for your changes, lines starting
+#with '#' will be ignored, and an empty message aborts the commit.
+#On branch master
+#Changes to be committed:
+#modified:1.c
+-------------------------------------------------------------------
+
+【注意】
+可以看出git commit -s与git commit的区别在于:
+git commit少了sign off信息
+
+(3)git commit -m "xxx"
+不会打开文本编辑器, 会用"xxx"中的信息去代替需要填充的信息, 也没有sign off信息
+
+2.git mv命令重命名文件
+【格式】:git mv fileoldname filenewname
+【例子】:git mv 1.c liao.c
+这个时候git status会发现liao.c已经在暂存区等待提交了
+git mv 1.c liao.c <=> mv 1.c liao.c <=> git rm 1.c <=> git add liao.c
+
+
+
+
+
 【2018.7.6】
 1.git stash save/pop/list/drop
 【功能】
