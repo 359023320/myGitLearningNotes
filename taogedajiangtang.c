@@ -330,6 +330,68 @@ git commit少了sign off信息
 这个时候git status会发现liao.c已经在暂存区等待提交了
 git mv 1.c liao.c <=> mv 1.c liao.c <=> git rm 1.c <=> git add liao.c
 
+【2018.5.29】
+1.git log的扩展使用
+(1).git log -p
+显示每个commit提交的差异, 适用于查看某个commit修改的内容差异
+
+(2).git log --stat
+显示每个commit文件修改的汇总信息, 修改了哪些文件, 增加/减少多少行(比--name-only信息全)
+
+(3).git log --pretty=format:"%h %cn %s" --graph
+--graph表示以图表的方式展示提交关系, format表示以什么样的格式进行展示
+%h:提交哈希值的简串
+%cn:commiter
+%s:提交说明
+
+(4).git log -S keyname
+查看引入/删除 keyname的提交
+比如我想查看O5_DRV_INJ_InjectAudioEsThread是谁引入的
+git log -S O5_DRV_INJ_InjectAudioEsThread
+
+(5).如何用git log查看某一时间段的提交
+git log --since="year-month-day" --until="year-month-day"
+【例子】
+2018年5月31日早晨帮助李鑫查找commit, 他只记得在3月份
+git log --since="2018-03-01" --until="2018-04-01"
+【注意】
+这样看到的提交有些时间不在3-1~4-1的范围之内, 是由于这些提交是cherry-pick过来或者rebase过来的
+由于cherry-pick或者rebase的commitID会变但是提交时间显示的原始时间, 所以看到的时间不在范围内
+只是由于在这段时间内cherry-pick或者rebase过来的, 就有记录
+
+【2018.5.30】
+1.Git别名
+【例子】
+git config --gloabl alias.br branch
+git br <=> git branch
+
+git config --global alias.co checkout
+git co <=> git checkout
+同样也可以在~./下的.gitconfig文件中的[alias]中去修改, 相当于
+[alias]
+	br = branch
+	co = checkout
+	
+【2018.5.31】
+1.见5.29的(5)
+2.git远程仓库的基本使用
+git remote
+查看当前本地仓库对应的远程仓库(一个本地仓库可以对应多个远程仓库)
+git remote -v
+查看当前本地仓库对应的远程仓库名与URL
+git remote add <shortname> <url>
+为当前本地git仓库添加一个远程仓库, 远程仓库地址为url, 名字为shortname指定
+例如:git remote add paul https://github.com/paulboone/ticgit
+git remote show [remote-name]
+查看远程仓库信息
+例如:git remote show origin
+git remote rename [oldname] [newname]
+为当前本地仓库的远程仓库改名
+例如:git remote rename pb paul
+git remote rm [remote-name]
+删除当前本地仓库的远程仓库
+例如:git remote rm paul
+
 
 
 
