@@ -392,6 +392,64 @@ git remote rm [remote-name]
 删除当前本地仓库的远程仓库
 例如:git remote rm paul
 
+【2018.6.2】
+1.git打标签
+(1).列出标签
+git tag:列出当前git仓库所有的tag
+git tag -l "v1.8.5*":列出v1.8.5*的所有tag
+
+(2).创建标签
+git标签分为两种:轻量标签(lightweight)与附注标签(annotated)
+轻量标签只是一个特定提交的引用, 而附注标签除此之外则包含了如作者信息, 邮箱等很多信息
+(2.1)附注标签的创建
+git tag -a v1.4 -m "xxx"
+其中-a就是-annotated的意思, -m就是输入的message, 如果不加-m选项, 则会打开编辑器手动输入
+若创建好后想查看标签信息:
+git show v1.4 则会看到标签信息与标签对应的commit信息
+(2.2)轻量标签的创建
+git tag v1.4
+这时若想看到标签的信息, 运行git show v1.4则只会看到对应的commit信息, 没有标签信息
+(2.3)给某一个cimmitID打标签
+【注意】:
+上面创建标签的方法, 无论是git tag v1.4还是git tag -a v1.4都是给当前分支的HEAD所指向的commit打标签
+【注意】:
+若要在某个指定的commit上打标签需要在命令的末尾加上commitID(前七位哈希值即可)
+【例子】:
+git tag -a v1.4 f61d5f88915
+git tag v1.4 f61d5f88915
+(2.4)共享标签
+涉及远程仓库无法实验:教程见progit2 Page62
+(2.5)检出标签
+【思考】:如何回退到某个标签所在的版本?
+方法一:git show [tagname]得到标签所在的commitID
+方法二:git checkout -b [newbranchname] [tagname]在标签所在的commit上创建一个新分支并切换上去
+
+【2018.6.5】
+1.git add, git commit原理(block, 树对象, 提交对象)
+git的每一个提交(commit)不是保存的文件差异, 而是提交时的文件快照
+git add的时候会为每一个要暂存的文件计算哈希值, 并将这些文件快照保存到block中
+git commit时会根据每一个文件的哈希值生成树对象, 再生成一个提交对象commit
+提交对象(commit)中会包含指向树对象的指针和如作者, 邮箱信息等的所有提交信息
+通过提交对象, 可以找到树对象, 而树对象中又有文件快照的哈希值, 所以能访问到文件
+【注意】:
+提交对象commit中还包含指向上一个提交(父提交)的指针, 第一个commit没有, 后面的依次指向前面的, 以此类推
+
+2.git分支的概念
+git分支仅仅是指向提交对象(commit)的可变指针, 再具体一点, git分支是一个文件, 该文件中包含了41个字节
+(commitID的40字节的哈希字符串和一个换行符)
+每个仓库都有一个master指针, 默认由git init创建
+【实验】
+cd Code/.git/refs/heads
+ls
+可以看到:
+AUDIO_STUDY
+这就是本地分支, ls -la可以看到它的属性为文件, 大小为41Byte
+-rw-r--r-- 1 41 5月31 09:39 AUDIO_STUDY
+cat AUDIO_STUDY
+f61d5f88915a97e88e91e935092a515498ea9660
+
+
+
 
 
 
