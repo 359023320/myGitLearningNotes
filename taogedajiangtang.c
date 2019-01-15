@@ -448,6 +448,25 @@ AUDIO_STUDY
 cat AUDIO_STUDY
 f61d5f88915a97e88e91e935092a515498ea9660
 
+【2018.6.6】
+1.git log --pretty=oneline --decorate
+查看当前仓库各个本地分支和tag指向的提交对象
+2.复习git log知识点
+
+【2018.6.7】
+1.利用git处理问题的流程
+(1)本身在master分支, 因为新增需求, 拉出iss53分支
+(2)在iss53分支上进行开发
+(3)master分支出了问题, 需要修改。切换回master分支, 在此基础上拉出hotfix分支进行修复
+(4)修复验证完成将hotfix分支合入master分支
+(5)最后切换回master分支继续工作
+
+2.什么是git merge过程中的"fast-forward"
+commit1->commit2->(*HEAD,master)commit3->(hotfix)commit4
+git merge hotfix即是说将hotfix merge到master上, 而hotfix与master是一条直线的关系
+commit1->commit2->commit3->(*HEAD, master, hotfix)commit4
+合并完毕只会将master向右移动, 这种就叫快进:fast-forward
+
 
 
 
