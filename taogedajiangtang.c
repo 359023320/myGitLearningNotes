@@ -467,6 +467,35 @@ git merge hotfix即是说将hotfix merge到master上, 而hotfix与master是一�
 commit1->commit2->commit3->(*HEAD, master, hotfix)commit4
 合并完毕只会将master向右移动, 这种就叫快进:fast-forward
 
+【2018.6.11】
+1.与git branch有关的命令
+git branch
+列出当前仓的所有本地分支
+
+git branch -v
+查看当前仓库每一个本地分支的最后一次提交
+
+git branch --merged
+查看当前仓库哪些本地分支合并到了当前分支上
+(如果已经合并过的分支可以用git branch -d删除, 否则提示-d出错, 需要用git branch -D删除)
+git branch --no-merged
+git branch -d
+git branch -D
+
+【2018.6.12】
+1.分支开发工作流
+(1)长期分支
+(2)特性分支
+
+2.远程分支
+*远程分支存在于本地, 反应上一次通信状态时远程仓库分支中的状态
+*远程分支的命名方式为(remote)/(branch)
+其中remote是远程仓库的名字, 在git clone时默认远程仓库名为origin, 其中branch为远程仓库分支名
+*所以当git clone发生时两个仓库(本地/远端)中共有三个分支
+本地:master与origin/master
+远端:master
+【注意】:
+如果不与远程仓库通信, 本地的远程分支是不会移动的
 
 
 
