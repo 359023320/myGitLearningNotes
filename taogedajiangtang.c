@@ -497,6 +497,50 @@ git branch -D
 【注意】:
 如果不与远程仓库通信, 本地的远程分支是不会移动的
 
+【2018.6.13】
+1.git rebase原理
+【注意】:git merge xxx是将xxx merge到HEAD
+【注意】:git rebase xxx 是将HEAD rebase到xxx上
+【例子】:
+C0->C1->C2->C4(*experiment)
+          ->C3(master)
+git rebase master将HEAD(experiment)rebase到master上
+C0->C1->C2->C3(master)->C4(*experiment)
+
+【原理】:
+rebase涉及两个分支:master(目标分支)和experiment(HEAD分支)
+(1).找到目标分支与源分支的最近共同祖先C2
+(2).源分支:找到基于C2的所有提交C4, 存储为临时文件
+(3).源分支:将源分支指向目标分支(HEAD->experiment->C3)
+(4).源分支:依据现有的指向, 将存储的临时文件依序应用, 最后更新源分支
+
+【2018.6.14】
+1.git rebase --onto选项
+【注意】:git rebase --onto选项用于多个分支之间的变基
+【例子】:
+C1->C2->C5->C6(master)
+      ->C3->C4->C10(server)
+	      ->C8->C9 (client)
+git rebase --onto master server client意思是:
+(1).找出client分支
+(2).找出client分支上与server分支共同祖先之后的提交(C8,C9)
+(3).将找出的提交rebase到master上, 效果为:
+C1->C2->C5->C6(master)->C8->C9(client)
+
+2.git rebase [targetbranch] [sourcebranch]
+利用6月13号的例子:
+C0->C1->C2->C4(*experiment)
+          ->C3(master)
+git rebase master与git rebase master experiment有同样的效果, 但是experiment必须为HEAD,
+做之前必须检查或者手动checkout
+
+【实验】:
+git rebase [targetbranch] [sourcebranch]
+即使targetbranch与sourcebranch都不是当前分支, 执行完后sourcebranch会成为当前分支
+
+3.git rebase的使用原则
+只对没有推送的本地修改用rebase清理提交历史, 已推送至别处的修改不要用rebase
+
 
 
 
