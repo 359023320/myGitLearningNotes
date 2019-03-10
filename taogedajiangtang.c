@@ -541,6 +541,36 @@ git rebase [targetbranch] [sourcebranch]
 3.git rebase的使用原则
 只对没有推送的本地修改用rebase清理提交历史, 已推送至别处的修改不要用rebase
 
+【2018.6.15】
+1.git利用SHA-1哈希值查找提交commit
+git每个commit的完整哈希值是40字节, 如:git log --pretty=oneline -1
+423bcdb3107de665ef478a4e5882e1d29884b2c0 [o5_TA] dynamic load on master make ok
+git可以为SHA-1值生成简短且唯一的值, 需要加上--abbrev-commit选项
+利用该选项输出的哈希值默认7字节, 有时会避免重复, 会增加字节数, 如:git log --pretty=oneline -1 --abbrev-commit
+423bcdb [o5_TA] dynamic load on master make ok
+
+2.如何查看分支指向哪个提交
+git branch -v可以看到当前仓库每一个本地分支的最后一次提交, 包含了其他信息(哈希值, 提交描述等)
+
+【2018.6.20】
+1.精炼版:git reset和git checkout的区别
+(1).HEAD在.git中, 是一个普通文件
+cat HEAD
+ref:refs/heads/MYDEV
+
+(2).分支在.git/refs/heads中, 也是普通文件, 有41字节
+cat MYDEV得到提交的哈希值
+
+(3).git checkout commit(如git checkout 5708f6cc)
+会生成临时分支5708f6cc, HEAD->临时分支5708f6cc->commit 5708f6cc
+而git reset commit是HEAD和分支一起回退
+
+【2018.6.21】
+1.引用日志reflog
+【注意】:
+reflog引用日志只存在于本地仓库, 记录了你自己在本地仓库的操作
+如果刚克隆的仓库, 是没有引用日志存在的
+
 
 
 
