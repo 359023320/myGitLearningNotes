@@ -634,3 +634,10 @@ git stash save --keep-index "message"
 但是书上说的没有保留暂存区文件时错误的,实际上是stash了的,可以在其他分支上去应用
 
 git stash clear
+
+【精炼版】
+(1) git stash save -a "message"保存当前分支工作区与暂存区的所有内容, 并将工作区与暂存区还原为与HEAD一致
+(2) git stash pop/apply stash@{n}只还原stash@{n}中保存的工作区的内容, 保存的暂存区内容不进行还原
+(3) git stash pop/apply --index stash@{n}将还原stash{n}中保存的工作区与暂存区的内容
+如果只是stash了工作区内容, 那么apply/pop时不需要带上--index选项
+如果stash的内容有暂存区的东西, 那么apply/pop时必须带上--index选项
