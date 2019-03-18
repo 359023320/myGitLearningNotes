@@ -572,10 +572,6 @@ reflog引用日志只存在于本地仓库, 记录了你自己在本地仓库的
 如果刚克隆的仓库, 是没有引用日志存在的
 
 
-
-
-
-
 【2018.7.6】
 1.git stash save/pop/list/drop
 【功能】
@@ -641,3 +637,72 @@ git stash clear
 (3) git stash pop/apply --index stash@{n}将还原stash{n}中保存的工作区与暂存区的内容
 如果只是stash了工作区内容, 那么apply/pop时不需要带上--index选项
 如果stash的内容有暂存区的东西, 那么apply/pop时必须带上--index选项
+
+【2018.11.12】
+【精炼版】
+git cherry-pick产生冲突的处理方式
+git cherry-pick commitID的基本原理是"合入", 将commitID与上一个commit间有变动的文件合入当前分支
+所以cherry-pick会产生冲突
+cherry-pick会将合并过程中没有冲突的文件放到暂存区, 将有冲突的文件放到工作区并标记(both modified)
+解决办法是在工作区解决有冲突的文件, 冲突解决后git add到暂存区
+可以运行git cherry-pick --continue或者直接git commit
+两者都会生成新的提交
+
+【例子】:
+(1).为什么说cherry-pick是将commitID与上一个commit相比有变动的文件合入HEAD
+例子见:/lianxi/lianxi_oj/cherrypick_conflict
+两个分支master与dev, 共同祖先是origin文件, master在其上添加了master add, dev在其上添加了dev add
+dev的第三个提交是新增了文件dev.txt
+
+dev分支:
+root@ubuntu:/lianxi/lianxi_oj/cherrypick_conflict# git log --pretty=oneline --abbrev-commit
+f386c66 dev add a file
+bd184d9 dev add
+c8aa518 origin add
+
+master分支:
+root@ubuntu:/lianxi/lianxi_oj/cherrypick_conflict# git log master --pretty=oneline --abbrev-commit
+5adac1b master add
+c8aa518 origin add
+
+那么在master分支上面执行命令git cherry-pick f386c66是会将f386c66的所有文件与HEAD合并呢还是仅仅合并f386c66与bd184d9有差异的文件?
+root@ubuntu:/lianxi/lianxi_oj/cherrypick_conflict# git cherry-pick f386c66b93b2e749c2c90d6bdeb200d6810b50a5
+[master 1f2f363] dev add a file
+ 0 files changed
+ create mode 100644 dev.txt
+root@ubuntu:/lianxi/lianxi_oj/cherrypick_conflict# ls -la
+总用量 16
+drwxr-xr-x 3 root root 4096 Mar 18 20:29 .
+drwxr-xr-x 8 root root 4096 Mar 18 20:10 ..
+-rw-r--r-- 1 root root    0 Mar 18 20:29 dev.txt
+drwxr-xr-x 8 root root 4096 Mar 18 20:29 .git
+-rw-r--r-- 1 root root   22 Mar 18 20:28 origin.txt
+root@ubuntu:/lianxi/lianxi_oj/cherrypick_conflict# 
+
+可以看到上述结论成立
+
+(2).cherry-pick有冲突的行为
+我们将dev的最近两次提交合并成一个提交, 修改了origin.txt也增加了dev.txt
+我们将master回退一个提交
+这时在master上cherry-pick dev的最新提交会怎么样呢?
+root@ubuntu:/lianxi/lianxi_oj/cherrypick_conflict# git cherry-pick fb04f8cf990c4b4f05186eba5ac98f92b90add87
+error: could not apply fb04f8c... test conflict
+hint: after resolving the conflicts, mark the corrected paths
+hint: with 'git add <paths>' or 'git rm <paths>'
+hint: and commit the result with 'git commit'
+root@ubuntu:/lianxi/lianxi_oj/cherrypick_conflict# 
+root@ubuntu:/lianxi/lianxi_oj/cherrypick_conflict# git status
+# On branch master
+# Changes to be committed:
+#
+#	new file:   dev.txt
+#
+# Unmerged paths:
+#   (use "git add/rm <file>..." as appropriate to mark resolution)
+#
+#	both modified:      origin.txt
+#
+root@ubuntu:/lianxi/lianxi_oj/cherrypick_conflict#
+
+可以看到, dev.txt没有冲突, 放到暂存区, 而origin.txt有冲突被标记
+按照提示解决冲突后放入暂存区再commit即可
