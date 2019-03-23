@@ -706,3 +706,64 @@ root@ubuntu:/lianxi/lianxi_oj/cherrypick_conflict#
 
 可以看到, dev.txt没有冲突, 放到暂存区, 而origin.txt有冲突被标记
 按照提示解决冲突后放入暂存区再commit即可
+
+【2018.11.13】
+1.git revert commitID原理以及冲突解决
+由于commit已经上库, 不能删除某一个commit, 只有形成新的commit, 不包含想要去除的commit
+git revert commitID, commitID就是想要删除的版本
+git会形成一次新提交, 不包含commitID的修改
+
+2.git revert commitID冲突
+git revert commitID会将commitID^与HEAD进行合并, 所以会产生冲突
+git会把没有冲突的文件放到暂存区, 有冲突的文件标记在工作区
+解决冲突后git add到暂存区, 运行git commit或者git revert --continue会生成新提交
+【注意】:
+git revert有个-n选项(--no-commit), 不会产生新提交, 而是把合并出的内容填到工作区与暂存区
+
+【实验】:/lianxi/lianxi_oj/revert_conflict
+提交顺序和文件内容如下, 可以看到revert发生了冲突, 也可以看到hint的解决提示:git add->git commit/git revert --continue
+
+root@ubuntu:/lianxi/lianxi_oj/revert_conflict# git log --pretty=oneline --abbrev-commit
+ab0dd7d 4th add
+08be042 3rd add
+fb7587e 2nd add
+7e63828 1st add
+f5e9cab origin add
+root@ubuntu:/lianxi/lianxi_oj/revert_conflict# cat test.txt 
+origin add
+1st add
+2nd add
+3rd add
+4th add
+root@ubuntu:/lianxi/lianxi_oj/revert_conflict# 
+root@ubuntu:/lianxi/lianxi_oj/revert_conflict# 
+root@ubuntu:/lianxi/lianxi_oj/revert_conflict# 
+root@ubuntu:/lianxi/lianxi_oj/revert_conflict# 
+root@ubuntu:/lianxi/lianxi_oj/revert_conflict# git revert fb7587e
+error: could not revert fb7587e... 2nd add
+hint: after resolving the conflicts, mark the corrected paths
+hint: with 'git add <paths>' or 'git rm <paths>'
+hint: and commit the result with 'git commit'
+root@ubuntu:/lianxi/lianxi_oj/revert_conflict# git status
+# On branch master
+# Unmerged paths:
+#   (use "git reset HEAD <file>..." to unstage)
+#   (use "git add/rm <file>..." as appropriate to mark resolution)
+#
+#	both modified:      test.txt
+#
+no changes added to commit (use "git add" and/or "git commit -a")
+root@ubuntu:/lianxi/lianxi_oj/revert_conflict# 
+
+1 origin add
+2 1st add
+3 <<<<<<< HEAD
+4 2nd add
+5 3rd add
+6 4th add
+7 =======
+8 >>>>>>> parent of fb7587e... 2nd add
+通过冲突文件可以看出, 是把fb7587e之前的提交与HEAD相合并的
+
+
+
