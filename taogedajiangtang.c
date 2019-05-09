@@ -765,5 +765,132 @@ root@ubuntu:/lianxi/lianxi_oj/revert_conflict#
 8 >>>>>>> parent of fb7587e... 2nd add
 通过冲突文件可以看出, 是把fb7587e之前的提交与HEAD相合并的
 
+【2019.5.9】
+1.repo manifests简单解析
+在实际项目工程上,git有很多仓库, 在创建仓库或者下载代码时需要指定一些仓库的路径, 属性等等
+就需要用到repo manifests中的东西
+下面引用一段实际用到的manifests, 加以简单的说明
+参考博客如下:https://blog.csdn.net/shift_wwx/article/details/19557031
+<manifest>
+
+/*remote是指远程仓库的名字,一般的远程仓库都是origin, 但是这里是middleware/reponame
+ *这个remote就指一个远程仓库的属性, 如果存在多个remote, 需要指定一个default的属性
+ *下面的每个project都是一个需要clone的仓库, 如果指定了remote, 那么用相应remote的属性
+ *没有指定就用default的属性
+ *fetch是指使用这个远程仓库的每个project的GIT URL前缀
+ *完整git URL:${remote_fetch}/${project_name}.git
+ *review是指gerrit的网址*/
+<remote name="middleware/reponame"
+        fetch="http://netaddress"
+		review="http://revie_netaddress"/>
+
+/*project代表每一个需要clone的本地仓库
+ *name用于生成clone用的完整URL, 格式为:${remote_fetch}/${project_name}.git
+ *path为这个本地仓的名字, code仓, code/src仓等等
+ *remote指定了clone这个本地仓库需要用到的远程仓库, 如果没有指定, 那么用default属性里的
+ *revision指远程仓库的提交, 可以是分支名, HASH值,表示从远程仓库middleware/reponame的master分支clone
+ *sync就是同步属性*/
+<project name="LIS/LIS_LTB/GIT/middleware/reponame"
+         path="code"
+		 remote="middleware/reponame"
+		 revision="master"
+		 sync-c="false"/>
+		 
+<project name="LIS/LIS_LTB/GIT/middleware/reponame/src"
+         path="code/src"
+		 remote="middleware/reponame"
+		 revision="dev"
+		 sync-c="false"/>
+
+/*include用于导入另一个xml文件, clone其它仓用*/ 
+<include name="LISLTBLinuxxxx.xml"/>
+
+</manifest>
+
+A description of the elements and their attributes follows.
+
+【Element manifest】
+
+The root element of the file.
+
+【Element remote】
+
+One or more remote elements may be specified. Each remote element specifies a Git URL shared by one or more projects and (optionally) the Gerrit review server those projects upload changes through.
+
+Attribute name: A short name unique to this manifest file. The name specified here is used as the remote name in each project's .git/config, and is therefore automatically available to commands likegit fetch,git remote,git pull and git push.
+
+Attribute alias: The alias, if specified, is used to override name to be set as the remote name in each project's .git/config. Its value can be duplicated while attributename has to be unique in the manifest file. This helps each project to be able to have same remote name which actually points to different remote url.
+
+Attribute fetch: The Git URL prefix for all projects which use this remote. Each project's name is appended to this prefix to form the actual URL used to clone the project.
+
+Attribute review: Hostname of the Gerrit server where reviews are uploaded to byrepo upload. This attribute is optional; if not specified thenrepo upload will not function.
+
+【Element default】
+
+At most one default element may be specified. Its remote and revision attributes are used when a project element does not specify its own remote or revision attribute.
+
+Attribute remote: Name of a previously defined remote element. Project elements lacking a remote attribute of their own will use this remote.
+
+Attribute revision: Name of a Git branch (e.g. master orrefs/heads/master). Project elements lacking their own revision attribute will use this revision.
+
+Element manifest-server
+
+At most one manifest-server may be specified. The url attribute is used to specify the URL of a manifest server, which is an XML RPC service that will return a manifest in which each project is pegged to a known good revision for the current branch and target.
+
+The manifest server should implement:
+
+GetApprovedManifest(branch, target)
+
+The target to use is defined by environment variables TARGETPRODUCT and TARGETBUILDVARIANT. These variables are used to create a string of the form $TARGETPRODUCT-$TARGETBUILDVARIANT, e.g. passion-userdebug. If one of those variables or both are not present, the program will call GetApprovedManifest without the target paramater and the manifest server should choose a reasonable default target.
+
+【Element project】
+
+One or more project elements may be specified. Each element describes a single Git repository to be cloned into the repo client workspace.
+
+Attribute name: A unique name for this project. The project's name is appended onto its remote's fetch URL to generate the actual URL to configure the Git remote with. The URL gets formed as:
+
+${remotefetch}/${projectname}.git
+
+where ${remotefetch} is the remote's fetch attribute and ${projectname} is the project's name attribute. The suffix ".git" is always appended as repo assumes the upstream is a forrest of bare Git repositories.
+
+The project name must match the name Gerrit knows, if Gerrit is being used for code reviews.
+
+Attribute path: An optional path relative to the top directory of the repo client where the Git working directory for this project should be placed. If not supplied the project name is used.
+
+Attribute remote: Name of a previously defined remote element. If not supplied the remote given by the default element is used.
+
+Attribute revision: Name of the Git branch the manifest wants to track for this project. Names can be relative to refs/heads (e.g. just "master") or absolute (e.g. "refs/heads/master"). Tags and/or explicit SHA-1s should work in theory, but have not been extensively tested. If not supplied the revision given by the default element is used.
+
+Attribute groups: List of groups to which this project belongs, whitespace or comma separated. All projects belong to the group "default", and each project automatically belongs to a group of it's name:name and path:path. E.g. for , that project definition is implicitly in the following manifest groups: default, name:monkeys, and path:barrel-of.
+
+【Element annotation】
+
+Zero or more annotation elements may be specified as children of a project element. Each element describes a name-value pair that will be exported into each project's environment during a 'forall' command, prefixed with REPO__. In addition, there is an optional attribute "keep" which accepts the case insensitive values "true" (default) or "false". This attribute determines whether or not the annotation will be kept when exported with the manifest subcommand.
+
+【Element remove-project】
+
+Deletes the named project from the internal manifest table, possibly allowing a subsequent project element in the same manifest file to replace the project with a different source.
+
+This element is mostly useful in the local_manifest.xml, where the user can remove a project, and possibly replace it with their own definition.
+
+【Element include】
+
+This element provides the capability of including another manifest file into the originating manifest. Normal rules apply for the target manifest to include- it must be a usable manifest on it's own.
+
+Attribute name; the manifest to include, specified relative to the manifest repositories root.
+
+Local Manifest
+
+Additional remotes and projects may be added through a local manifest, stored in$TOP_DIR/.repo/local_manifest.xml.
+
+For example:
+
+$ cat .repo/local_manifest.xml
+Users may add projects to the local manifest prior to a repo sync invocation, instructing repo to automatically download and manage these extra projects.
+		 
+
+		
+		
+
 
 
