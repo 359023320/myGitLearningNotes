@@ -790,6 +790,12 @@ root@ubuntu:/lianxi/lianxi_oj/revert_conflict#
  *remote指定了clone这个本地仓库需要用到的远程仓库, 如果没有指定, 那么用default属性里的
  *revision指远程仓库的提交, 可以是分支名, HASH值,表示从远程仓库middleware/reponame的master分支clone
  *sync就是同步属性*/
+ /*【2019/5/10更正】
+  *原以为remote是远程仓库, 而本地仓库只是从remote远程仓库中的revision分支clone下来的
+  *原以为是很多本地仓库对一个远程仓库的不同分支的关系
+  *询问了涛哥以后, 知道remote是指一个服务器, 而project里面的name才是服务器上的仓, revision是服务器仓的分支或提交
+  *确定了服务器, 仓库, 提交, 才能确定clone的最终路径
+  *实际上也是很多本地仓库对远程服务器很多仓库的关系*/
 <project name="LIS/LIS_LTB/GIT/middleware/reponame"
          path="code"
 		 remote="middleware/reponame"
