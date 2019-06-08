@@ -571,6 +571,61 @@ cat MYDEV得到提交的哈希值
 reflog引用日志只存在于本地仓库, 记录了你自己在本地仓库的操作
 如果刚克隆的仓库, 是没有引用日志存在的
 
+【2018.6.25】
+1.git fetch
+见自己总结的博客
+https://blog.csdn.net/liaojunwu/article/details/90381846
+https://blog.csdn.net/liaojunwu/article/details/90416892
+https://blog.csdn.net/liaojunwu/article/details/90648587
+
+【2018.6.27】
+1.git push(依据为git push --help手册)
+git push --help
+NAME
+	git-push - Update remote refs along with associated objects
+SYNOPSIS
+    git push [<options>] [<repository> [<refspec>...]]
+OPTIONS
+    <repository>
+    The "remote" repository that is destination of a push operation. This parameter can be either a URL (see the section GIT URLS below) or the name of a
+    remote (see the section REMOTES below).
+	
+	-f, --force
+    Usually, the command refuses to update a remote ref that is not an ancestor of the local ref used to overwrite it. This flag disables the check. This
+    can cause the remote repository to lose commits; use it with care.
+	
+	<refspec>...
+    The format of a <refspec> parameter is an optional plus +, followed by the source ref <src>, followed by a colon :, followed by the destination ref
+    <dst>. It is used to specify with what <src> object the <dst> ref in the remote repository is to be updated.
+	
+	The <src> is often the name of the branch you would want to push, but it can be any arbitrary "SHA-1 expression", such as master~4 or HEAD (see
+    gitrevisions(7)).
+
+    The <dst> tells which ref on the remote side is updated with this push. Arbitrary expressions cannot be used here, an actual ref must be named. If
+    :<dst> is omitted, the same ref as <src> will be updated.
+
+    The object referenced by <src> is used to update the <dst> reference on the remote side, but by default this is only allowed if the update can
+    fast-forward <dst>. By having the optional leading +, you can tell git to update the <dst> ref even when the update is not a fast-forward. This does not
+    attempt to merge <src> into <dst>. 
+	
+	Pushing an empty <src> allows you to delete the <dst> ref from the remote repository.
+EXAMPLES
+	git push origin +dev:master
+    Update the origin repository’s master branch with the dev branch, allowing non-fast-forward updates. This can leave unreferenced commits dangling in
+    the origin repository. Consider the following situation, where a fast-forward is not possible:
+
+                           o---o---o---A---B  origin/master
+                                    \
+                                     X---Y---Z  dev
+
+    The above command would change the origin repository to
+
+                                     A---B  (unnamed branch)
+                                    /
+                           o---o---o---X---Y---Z  master
+
+    Commits A and B would no longer belong to a branch with a symbolic name, and so would be unreachable. As such, these commits would be removed by a git
+    gc command on the origin repository.
 
 【2018.7.6】
 1.git stash save/pop/list/drop
