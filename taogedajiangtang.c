@@ -693,6 +693,24 @@ git stash clear
 如果只是stash了工作区内容, 那么apply/pop时不需要带上--index选项
 如果stash的内容有暂存区的东西, 那么apply/pop时必须带上--index选项
 
+【2018.10.30】
+1.关于repo upload failed changeId closed错误的原因
+1).changeId的作用:
+保证已经提交审核的修订通过审核入库后, 被别的分支cherry-pick后再推送至服务器时不会产生新的重复的评审任务
+Gerrit设计了一套方法, 即要求每个提交包含唯一的change-Id, 这个change-Id因为出现在日志中, 当执行cherry-pick时
+也会保持, Gerrit一旦发现新的提交包含了已经处理过的change-Id, 就不再为该修订创建新的评审任务和task-id, 
+直接将提交入库
+
+2).重新提交(追加提交)
+要求在gerrit没有merge的情况下:在本地git commit --amend修改后直接repo upload
+【注意】:git commit --amend会修改commitId的HASH值, 不会修改change-Id(可做实验证明这点)
+所以追加提交的场景下不需要再gerrit上abandon提交, 若将提交abandon掉, 那么gerrit上的change-Id就无效了, 再repo uploaded
+上去也是同一个change-Id, 导致repo upload失败
+
+3).撤销未上库的提交
+要求在gerrit没有merge的情况下:在gerrit上abandon后本地git reset --soft HEAD^
+这样下次再进行新的提交生成新的change-Id, repo upload便没有问题
+
 【2018.11.12】
 【精炼版】
 git cherry-pick产生冲突的处理方式
